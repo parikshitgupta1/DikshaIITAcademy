@@ -1,52 +1,67 @@
-// navbar becomes sticky and background of navbar become dark
-$(document).ready(function () {
-  $(window).scroll(function () {
-    if ($(document).scrollTop() > 50) {
-      $(".navbar").addClass("back");
-    } else {
-      $(".navbar").removeClass("back");
-    }
-  });
-});
+// Your web app's Firebase configuration
+var firebaseConfig = {
+  apiKey: "AIzaSyCoWpRdcdCnsvq-8Im6AwE68nJ1LjPfvco",
+  authDomain: "diksha-iit-academy.firebaseapp.com",
+  databaseURL: "https://diksha-iit-academy-default-rtdb.firebaseio.com",
+  projectId: "diksha-iit-academy",
+  storageBucket: "diksha-iit-academy.appspot.com",
+  messagingSenderId: "828508022020",
+  appId: "1:828508022020:web:a096e3c7f2761cb9bbdc51",
+};
 
-//Slideshow......
-var slideIndex = 1;
-showSlides(slideIndex);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-function plusSlides(n) {
-  showSlides((slideIndex += n));
+// var messageRef = firebase.database().ref("messages");
+var db = firebase.firestore();
+
+document.getElementById("contactForm").addEventListener("submit", submitForm);
+
+function submitForm(e) {
+  e.preventDefault();
+  var sender = document.getElementById("sender").value;
+  var senderEmail = document.getElementById("senderEmail").value;
+  var senderPhone = document.getElementById("senderPhone").value;
+  var message = document.getElementById("message").value;
+
+  saveMessage(sender, senderEmail, senderPhone, message);
+
+  document.getElementById("sender").value = "";
+  document.getElementById("senderEmail").value = "";
+  document.getElementById("senderPhone").value = "";
+  document.getElementById("message").value = "";
+  alert("Form submitted sucessfully");
 }
 
-setInterval(() => {
-  showSlides((slideIndex += 1));
-}, 3000);
-
-function currentSlide(n) {
-  showSlides((slideIndex = n));
+function saveMessage(sender, senderEmail, senderPhone, message) {
+  // var newMessageRef = messageRef.push();
+  // newMessageRef.set({
+  //   name: sender,
+  //   email: senderEmail,
+  //   phone: senderPhone,
+  //   message: message,
+  // });
+  db.collection("users")
+  .add({
+    email: senderEmail,
+    message: message,
+    phone: senderPhone,
+    username: sender,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+  })
+  .catch((err) => alert(err.message));
 }
 
-function showSlides(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlides");
-  var dots = document.getElementsByClassName("dot");
-  if (n > slides.length) {
-    slideIndex = 1;
-  }
-  if (n < 1) {
-    slideIndex = slides.length;
-  }
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";
-  }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex - 1].style.display = "block";
-  dots[slideIndex - 1].className += " active";
-}
 //disable preloader
 function preloader() {
   document.querySelector(".preloaderBox").style.display = "none";
+  setTimeout(() => {
+    Popup(true);
+    document.getElementById("popupImg").style.animationName = "popupScroll";
+    setTimeout(() => {
+      document.getElementById("popupImg").style.top = "0%";
+    }, 1000);
+  }, 1000);
 }
 
 setTimeout(function () {
@@ -61,31 +76,11 @@ function toggleMenu() {
   btn.classList.toggle("active");
 }
 
-//results swiper
-var swiper = new Swiper(".swiper-container", {
-  effect: "coverflow",
-  grabCursor: true,
-  centeredSlides: true,
-  slidesPerView: "auto",
-  coverflowEffect: {
-    rotate: 0,
-    stretch: 0,
-    depth: 0,
-    modifier: 1,
-    slideShadows: true,
-  },
-  loop: true,
-});
+function Popup(x) {
+  if (x) {
+    document.querySelector(".Image__popUp").style.display = "flex";
+  } else {
+    document.querySelector(".Image__popUp").style.display = "none";
+  }
+}
 
-const sr = ScrollReveal();
-
-sr.reveal(".contentInHome", {
-  origin: "left",
-  distance: "180px",
-  duration: 1000,
-  reset: true,
-});
-sr.reveal(".about", {});
-sr.reveal(".testimonialContent", {});
-sr.reveal(".contact", {});
-sr.reveal(".revealit", {});
